@@ -1,0 +1,15 @@
+version: '3'
+services:
+  amz-scraper:
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    image: ghcr.io/edivad1999/amz-scraper:1.0.0
+    restart: always
+    volumes:
+      - ./:/data
+    environment:
+      configPath: /data/config.json
+
+
