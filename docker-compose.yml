@@ -5,7 +5,7 @@ services:
       options:
         max-size: 10m
         max-file: "3"
-    image: ghcr.io/edivad1999/amz-scraper:1.0.0
+    image: ghcr.io/edivad1999/amz-scraper:1.0.10
     restart: always
     volumes:
       - ./data:/data

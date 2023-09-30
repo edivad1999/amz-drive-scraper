@@ -19,8 +19,10 @@ class CommonResourceService(private val database: Database, private val json: Js
         val createdDate = varchar("createdDate", 100)
         val kind = enumeration("kind", Kind::class)
         val parents = varchar("parent", 10000)
+        val contentProperties = varchar("contentProperties", 1000)
         val version = integer("version")
         val downloadPath = varchar("downloadPath", 1000).nullable()
+        val size = long("size")
 
 
         override val primaryKey = PrimaryKey(id)
@@ -47,6 +49,8 @@ class CommonResourceService(private val database: Database, private val json: Js
             it[downloadPath] = response.downloadPath
             it[downloaded] = response.downloaded
             it[version] = response.version
+            it[contentProperties] = response.contentProperties
+            it[size] = response.size
         }[CommonResourceTable.id]
     }
 
@@ -65,8 +69,14 @@ class CommonResourceService(private val database: Database, private val json: Js
                         parents = json.decodeFromString(it[CommonResourceTable.parents]),
                         downloadPath = it[CommonResourceTable.downloadPath],
                         version = it[CommonResourceTable.version],
-                        downloaded = it[CommonResourceTable.downloaded]
-                    )
+                        downloaded = it[CommonResourceTable.downloaded],
+                        _contentProperties = ContentProperties(
+                            contentType = it[CommonResourceTable.contentProperties],
+                            size = it[CommonResourceTable.size]
+                        ),
+
+
+                        )
                 }
                 .singleOrNull()
         }
@@ -84,6 +94,9 @@ class CommonResourceService(private val database: Database, private val json: Js
                 it[downloadPath] = response.downloadPath
                 it[version] = response.version
                 it[downloaded] = response.downloaded
+                it[contentProperties] = response.contentProperties
+                it[size] = response.size
+
 
             }
         }
@@ -110,8 +123,13 @@ class CommonResourceService(private val database: Database, private val json: Js
                 parents = json.decodeFromString(it[CommonResourceTable.parents]),
                 downloadPath = it[CommonResourceTable.downloadPath],
                 version = it[CommonResourceTable.version],
-                downloaded = it[CommonResourceTable.downloaded]
-            )
+                downloaded = it[CommonResourceTable.downloaded],
+                _contentProperties = ContentProperties(
+                    contentType = it[CommonResourceTable.contentProperties],
+                    size = it[CommonResourceTable.size]
+                ),
+
+                )
         }.toList()
 
     }

@@ -45,7 +45,7 @@ fun Application.mainModule() {
     }
     val configFile = File(System.getenv("configPath")).readText()
     val config = Json.decodeFromString<AuthConfig>(configFile)
-    val repo = AmazonDriveRepository(client, config)
+    val repo = AmazonDriveRepository(client, config, coroutineContext)
 
     launch {
         repo.start()
