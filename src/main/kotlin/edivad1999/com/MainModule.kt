@@ -6,10 +6,10 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.cookies.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
-import io.ktor.util.Identity.decode
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
@@ -33,18 +33,22 @@ fun Application.mainModule() {
             })
         }
         install(Logging) {
-            logger = Logger.EMPTY
-            level = LogLevel.ALL
+            logger = Logger.SIMPLE
+            level = LogLevel.HEADERS
             filter {
-                false
+                true
 
             }
         }
 
 
     }
-    val configFile = File(System.getenv("configPath")).readText()
-    val config = Json.decodeFromString<AuthConfig>(configFile)
+    val config = {
+        val configFile = File(System.getenv("configPath")).readText()
+
+        val config = Json.decodeFromString<AuthConfig>(configFile)
+        config
+    }
     val repo = AmazonDriveRepository(client, config, coroutineContext)
 
     launch {

@@ -36,3 +36,4 @@ out/
 .vscode/
 /config.json
 /local.properties
+/download

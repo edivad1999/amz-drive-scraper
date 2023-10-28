@@ -18,13 +18,14 @@ import java.io.File
 import java.nio.file.Files
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class AmazonDriveRepository(
     private val client: HttpClient,
-    private val authConfig: AuthConfig, override val coroutineContext: CoroutineContext,
+    private val authConfig: () -> AuthConfig, override val coroutineContext: CoroutineContext,
 ) : CoroutineScope {
-    private val downloadFolder: File = File(authConfig.downloadFolder)
+    private val downloadFolder: File get() = File(authConfig().downloadFolder)
     val rootFolder = File(downloadFolder, "root").also {
         if (!it.exists()) Files.createDirectory(it.toPath())
     }
@@ -96,12 +97,15 @@ class AmazonDriveRepository(
                             getRecursiveFolder(rootFolder, it)
                             offset += 200
 
-                        }.onFailure { it.printStackTrace() }.getOrNull()
-                    } while (offset <= (all?.count ?: Int.MAX_VALUE))
+                        }.onFailure { it.printStackTrace() }.getOrThrow()
+                    } while (offset <= all.count)
 
 //                    getRecursiveFolder(rootFolder, firstRootResponse)
 
-                }.onFailure { it.printStackTrace() }
+                }.onFailure {
+                    it.printStackTrace()
+                    delay(5.minutes)
+                }
                 delay(60.seconds)
 
             }
@@ -228,9 +232,9 @@ class AmazonDriveRepository(
     fun HttpRequestBuilder.setAmzRetrievedHeaders() {
         headers {
             accept(ContentType.Application.Json)
-            header(HttpHeaders.UserAgent, authConfig.userAgent)
-            header("x-amzn-sessionid", authConfig.sessionId)
-            header(HttpHeaders.Cookie, authConfig.cookie)
+            header(HttpHeaders.UserAgent, authConfig().userAgent)
+            header("x-amzn-sessionid", authConfig().sessionId)
+            header(HttpHeaders.Cookie, authConfig().cookie)
         }
     }
 
