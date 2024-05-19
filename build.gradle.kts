@@ -50,7 +50,7 @@ ktor {
         jreVersion.set(JavaVersion.VERSION_17)
         localImageName.set("amz-scraper")
 
-        imageTag.set("1.0.11")
+        imageTag.set("1.0.12")
 
         environmentVariable("configPath", "/data/config.json")
 
